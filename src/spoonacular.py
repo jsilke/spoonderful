@@ -1,6 +1,47 @@
 import requests as rq
 import os
 
+# I could also use protocols, the __call__ method, or functions here too, but I think this annotation is less ambiguous than the alternatives.
+from abc import ABC, abstractmethod
+
+
+class DataRetrievalStrategy(ABC):
+    """
+    Abstract base class for different data retrieval strategies.
+    """
+
+    @abstractmethod
+    def retrieve_data(self, json_data: list[dict]) -> list[dict]:
+        """
+        The abstract method that will implement the data retrieval strategy.
+        """
+        pass
+
+
+class RecipeRetrievalStrategy(DataRetrievalStrategy):
+    """
+    Retrieving meal data from the SpoonacularResponse.
+    """
+
+    def retrieve_data(self, json_data: list[dict]) -> list[dict]:
+        """
+        A concrete data retrieval strategy to extract recipe fields from the response json.
+        """
+        recipe_data = [
+            {
+                "id": recipe["id"],
+                "title": recipe.get("title"),
+                "used_ingredient_count": recipe.get("usedIngredientCount"),
+                "missed_ingredient_count": recipe.get(
+                    "missedIngredientCount"
+                ),  # can add the specific ingredients later.
+                "likes": recipe.get("likes"),
+            }
+            for recipe in json_data
+        ]
+
+        return recipe_data
+
 
 class SpoonacularResponse:
     """
@@ -36,7 +77,7 @@ class SpoonacularResponse:
 
         response = rq.get(URL, params=PARAMETERS, headers=cls.HEADERS)
         status = cls.check_response_status(response)
-
+        print(status[1])
         if status[0]:
             return cls(response, response.json())
         else:
@@ -64,6 +105,14 @@ class SpoonacularResponse:
             print(f"{header}: {response.headers.get(header)}")
 
         return (status_code == 200), info
+
+    def get_data(self, retrieval_strategy: DataRetrievalStrategy) -> dict:
+        """
+        Returns response data based on a concrete retrieval_strategy object that inherits from the DataRetrievalStrategy abstract base class.
+        """
+        retrieved_data = retrieval_strategy.retrieve_data(self.data)
+
+        return retrieved_data
 
 
 def main():
