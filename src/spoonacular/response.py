@@ -1,7 +1,7 @@
 from __future__ import annotations
 import requests as rq
 import os
-import retrieval as drs
+from .retrieval import DataRetrievalStrategy  # . needed because modules not packaged
 from typing import Optional
 
 
@@ -121,7 +121,6 @@ class SpoonacularResponse:
         info = f"{MDN_HTTP_STATUS}{status_code}"
         print(info)
 
-        # I was advised to monitor these headers by the Spoonacular team to help avoid additional charges.
         _ratelimit_headers = [
             "X-Ratelimit-Classifications-Limit",
             "X-Ratelimit-Classifications-Remaining",
@@ -140,9 +139,7 @@ class SpoonacularResponse:
 
         return status_code
 
-    def get_data(
-        self, retrieval_strategy: drs.DataRetrievalStrategy
-    ) -> dict[str, object]:
+    def get_data(self, retrieval_strategy: DataRetrievalStrategy) -> dict[str, object]:
         """
         Returns response data based on a concrete retrieval_strategy object that inherits from the DataRetrievalStrategy abstract base class.
         """

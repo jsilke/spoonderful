@@ -36,7 +36,8 @@ class SimpleRetrievalStrategy(DataRetrievalStrategy):
         Retrieves basic information.
         """
         recipe_data = [
-            {field: recipe.get(field) for field in self.fields} for recipe in json_data
+            {field: recipe.get(field) for field in self.fields}
+            for recipe in json_data.get("results")
         ]
 
         return recipe_data
@@ -83,7 +84,8 @@ class ComplexRetrievalStrategy(DataRetrievalStrategy):
         Retrieves comprehensive information.
         """
         recipe_data = [
-            {field: recipe.get(field) for field in self.fields} for recipe in json_data
+            {field: recipe.get(field) for field in self.fields}
+            for recipe in json_data.get("results")
         ]
 
         return recipe_data
