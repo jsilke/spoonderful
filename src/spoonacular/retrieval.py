@@ -68,24 +68,30 @@ class ComplexRetrievalStrategy(DataRetrievalStrategy):
         "id",
         "title",
         "image",
+        "analyzedInstructions",
         "readyInMinutes",
         "spoonacularScore",
+        "aggregateLikes",
         "healthScore",
         "pricePerServing",
         "servings",
         "nutrition",  # nested
         "usedIngredientCount",
-        "missedIngredientCount",
+        "vegetarian",
+        "vegan",
+        "glutenFree",
+        "dairyFree",
     )
 
     def retrieve_data(self, json_data: list[dict]) -> list[dict]:
         """
         A concrete data retrieval strategy to extract recipe fields from the response json.
-        Retrieves comprehensive information.
+        Retrieves comprehensive information with the restriction that no ingredients are missing (accounts for substitutions).
         """
         recipe_data = [
             {field: recipe.get(field) for field in self.fields}
             for recipe in json_data.get("results")
+            if (recipe.get("missedIngredientCount") == 0)
         ]
 
         return recipe_data

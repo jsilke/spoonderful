@@ -8,9 +8,11 @@ The goal of this project is to build a meal recommender with the principal inten
 ### Data
 ---
 
-Most data is dynamically sourced from [Spoonacular](https://spoonacular.com/)'s API in accordance with their [terms of use](https://spoonacular.com/food-api/terms). Note that the Spoonacular team also provides a list that includes the 1000 most popular ingredients and their associated IDs [here](https://spoonacular.com/food-api/docs#List-of-Ingredients). Direct use of this project's source code will require an API key, which can be obtained [directly from Spoonacular](https://spoonacular.com/food-api/console#Dashboard) or [through RapidAPI](https://rapidapi.com/spoonacular/api/recipe-food-nutrition/), though this project is structured to use a RapidAPI key for authentication.
+Most data is dynamically sourced from [Spoonacular](https://spoonacular.com/)'s API in accordance with their [terms of use](https://spoonacular.com/food-api/terms). Note that the Spoonacular team also provides a list including the 1000 most popular ingredients and their associated IDs [here](https://spoonacular.com/food-api/docs#List-of-Ingredients). Direct use of this project's source code will require an API key, which can be obtained [directly from Spoonacular](https://spoonacular.com/food-api/console#Dashboard) or [through RapidAPI](https://rapidapi.com/spoonacular/api/recipe-food-nutrition/), though this project is structured to use a RapidAPI key for authentication.
+
+***Note:*** As of 2022/02/13, the versions of the API hosted by Spoonacular and RapidAPI differ in functionality and recipe IDs are not reliably synchronous between the two. This may change in the future.
 
 ### Key Outputs
 ---
 
-This project uses a list of household ingredients to generate top meal recommendations for the user.
+This project uses a list of household ingredients to generate top meal recommendations for the user through a combination of content-based and collaborative filtering strategies.

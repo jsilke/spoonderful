@@ -23,12 +23,38 @@ class SpoonacularResponse:
         self.response = response
         self.data = data
 
+    @staticmethod
+    def _check_response(response: rq.Response) -> rq.Response.status_code:
+        """
+        Reports on the response status code and how many daily requests are remaining.
+        Used internally by `_make_request_and_check_response`.
+        """
+        MDN_HTTP_STATUS = "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/"
+        status_code = response.status_code
+        info = f"{MDN_HTTP_STATUS}{status_code}"
+        print(info)
+
+        _ratelimit_headers = [
+            "X-Ratelimit-Classifications-Limit",
+            "X-Ratelimit-Classifications-Remaining",
+            "X-Ratelimit-Requests-Limit",
+            "X-Ratelimit-Requests-Remaining",
+            "X-Ratelimit-Tinyrequests-Limit",
+            "X-Ratelimit-Tinyrequests-Remaining",
+        ]
+        for header in _ratelimit_headers:
+            value = response.headers.get(header)
+            if value:
+                print(f"{header}: {value}")
+
+        return status_code
+
     @classmethod
     def _make_request_and_check_response(
         cls, url: str, parameters: str, headers: Optional[str] = None
     ) -> SpoonacularResponse:
         """
-        Private method called by the contructor classmethods that completes and checks the request.
+        Used internally by classmethods to complete and check requests.
         """
         response = rq.get(
             url,
@@ -36,7 +62,7 @@ class SpoonacularResponse:
             headers=headers,
         )
 
-        if cls.check_response(response):
+        if cls._check_response(response):
             return cls(response, response.json())
 
         return cls(response)
@@ -45,7 +71,7 @@ class SpoonacularResponse:
     def get_recipes_from_ingredients(cls, ingredients: str) -> SpoonacularResponse:
         """
         Get recipies from Spoonacular's API using a list of ingredients formatted as a comma-seperated string.
-        See: https://spoonacular.com/food-api/docs#Search-Recipes-by-Ingredients.
+        See: https://spoonacular.com/food-api/docs#Search-Recipes-by-Ingredients
         """
         ENDPOINT = "recipes/findByIngredients"
         URL = f"{cls.ENTRY_POINT}{ENDPOINT}"
@@ -110,34 +136,6 @@ class SpoonacularResponse:
         )
 
         return spoonacular_response
-
-    @staticmethod
-    def check_response(response: rq.Response) -> rq.Response.status_code:
-        """
-        Reports on the response status code and how many daily requests are remaining.
-        """
-        MDN_HTTP_STATUS = "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/"
-        status_code = response.status_code
-        info = f"{MDN_HTTP_STATUS}{status_code}"
-        print(info)
-
-        _ratelimit_headers = [
-            "X-Ratelimit-Classifications-Limit",
-            "X-Ratelimit-Classifications-Remaining",
-            "X-Ratelimit-Requests-Limit",
-            "X-Ratelimit-Requests-Remaining",
-            "X-Ratelimit-Tinyrequests-Limit",
-            "X-Ratelimit-Tinyrequests-Remaining",
-            "X-RateLimit-results-Reset",
-            "X-RateLimit-requests-Reset",
-            "X-RateLimit-tinyrequests-Reset",
-        ]
-        for header in _ratelimit_headers:
-            value = response.headers.get(header)
-            if value:
-                print(f"{header}: {value}")
-
-        return status_code
 
     def get_data(self, retrieval_strategy: DataRetrievalStrategy) -> dict[str, object]:
         """
