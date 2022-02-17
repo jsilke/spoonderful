@@ -1,10 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
-
-from pydantic.types import conint
-
-# TODO add recipe schema.
+from enum import enum
 
 
 class UserOut(BaseModel):
@@ -35,6 +32,30 @@ class TokenData(BaseModel):
     id: Optional[str] = None
 
 
+class Direction(enum):
+    """
+    Tracks dislikes and likes.
+    """
+
+    DISLIKE = 0
+    LIKE = 1
+
+
 class Vote(BaseModel):
+    """
+    Associates likes/dislikes with recipes.
+    """
+
     recipe_id: int
-    dir: conint(le=1)
+    direction: Direction
+
+
+class Recommendation(BaseModel):
+    """
+    Stores 5 recommended recipes to present to the user.
+    """
+
+    recipe_ids: list[int]
+    recipe_images: list
+    recipe_instructions: list[str]
+    recipe_time: list[int]

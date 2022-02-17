@@ -1,8 +1,9 @@
 from .database import Base
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.sql.expression import text
+from data.schemas import Direction
 
-# TODO Refactor.
+
 class User(Base):
     """
     ORM model for a table to store user-specific data.
@@ -18,17 +19,16 @@ class User(Base):
     )
 
 
-class Recommendation(Base):
+class Vote(Base):
     """
-    ORM model for a table to store recommendations preovided to users.
+    ORM model for a table to store recommendations voted on by users as id pairs.
     """
 
-    __tablename__ = "recommendations"
+    __tablename__ = "likes"
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    recipe_id = Column(Integer, nullable=False)
-    liked = Column(Boolean)  # This may be better represented differently.
-    created_at = Column(
-        TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")
+    user_id = Column(
+        Integer, ForeignKey("users.id"), ondelete="CASCADE", primary_key=True
     )
+    recipe_id = Column(Integer, ondelete="CASCADE", primary_key=True)
+    direction = Column(Direction, nullable=False, ondelete="CASCADE")
+    # TODO look into the ondelete param.
