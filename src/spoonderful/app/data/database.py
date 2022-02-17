@@ -16,3 +16,11 @@ engine = create_engine(SQLALCHEMY_DATABASE)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+
+def get_db():
+    """
+    Establish a database session for SQL queries and close the session after. Acts as our dependency.
+    """
+    with SessionLocal() as db:
+        yield db

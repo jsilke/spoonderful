@@ -1,10 +1,9 @@
-import email
 from .database import Base
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.sql.expression import text
 
-
-class Users(Base):
+# TODO Refactor.
+class User(Base):
     """
     ORM model for a table to store user-specific data.
     """
@@ -19,7 +18,7 @@ class Users(Base):
     )
 
 
-class Recommendations(Base):
+class Recommendation(Base):
     """
     ORM model for a table to store recommendations preovided to users.
     """
