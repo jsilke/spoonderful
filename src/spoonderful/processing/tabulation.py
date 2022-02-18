@@ -84,4 +84,4 @@ class InstructionsTabulator(DataTabulator):
             recipe_instructions = "\n".join(recipe_instruction_list)
             all_instructions.append(recipe_instructions)
 
-        return pd.Series(all_instructions)
+        return pd.DataFrame(all_instructions, columns=["instructions"])
