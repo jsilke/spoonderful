@@ -1,7 +1,7 @@
-from .database import Base
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Boolean
+from src.spoonderful.app.data.database import Base
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String
 from sqlalchemy.sql.expression import text
-from data.schemas import Direction
+from src.spoonderful.app.data.schemas import Direction
 
 
 class User(Base):
@@ -31,4 +31,3 @@ class Vote(Base):
     )
     recipe_id = Column(Integer, ondelete="CASCADE", primary_key=True)
     direction = Column(Direction, nullable=False, ondelete="CASCADE")
-    # TODO look into the ondelete param.

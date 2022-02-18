@@ -1,6 +1,6 @@
 from spoonacular.response import SpoonacularResponse
 from spoonacular.retrieval import ComplexRetrievalStrategy, DataRetrievalStrategy
-from spoonderful.processing import tabulation as tab
+from src.spoonderful.processing import tabulation as tab
 import pandas as pd
 
 

@@ -1,7 +1,7 @@
 from fastapi import status, Depends, APIRouter
 from sqlalchemy.orm import Session
-from auth import utils
-from app.data import database, models, schemas
+from src.spoonderful.app.auth import utils
+from src.spoonderful.app.data import database, models, schemas
 
 router = APIRouter(prefix="/register", tags=["Sign Up"])
 

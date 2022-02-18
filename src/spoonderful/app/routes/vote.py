@@ -1,7 +1,7 @@
 from fastapi import status, Depends, APIRouter
 from sqlalchemy.orm import Session
-from app.data import schemas, database, models
-from app.auth import oauth2
+from src.spoonderful.app.data import schemas, database, models
+from src.spoonderful.app.auth import oauth2
 
 
 router = APIRouter(prefix="/vote", tags=["Vote"])

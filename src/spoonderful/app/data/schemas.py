@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
-from enum import enum
+from enum import Enum
 
 
 class UserOut(BaseModel):
@@ -32,7 +32,7 @@ class TokenData(BaseModel):
     id: Optional[str] = None
 
 
-class Direction(enum):
+class Direction(Enum):
     """
     Tracks dislikes and likes.
     """
