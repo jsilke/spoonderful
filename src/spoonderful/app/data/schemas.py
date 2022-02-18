@@ -52,10 +52,10 @@ class Vote(BaseModel):
 
 class Recommendation(BaseModel):
     """
-    Stores 5 recommended recipes to present to the user.
+    Stores a recommended recipe to present to the user.
     """
 
-    recipe_ids: list[int]
-    recipe_images: list
-    recipe_instructions: list[str]
-    recipe_time: list[int]
+    name: str
+    image: str
+    instructions: str
+    time_minutes: int
