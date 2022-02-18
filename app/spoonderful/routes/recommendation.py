@@ -11,7 +11,7 @@ def get_recipes(ingredients: str):
     """
     Query Spoonacular's API for data using the provided ingredient list and apply the recommendation algorithm to return recipe recommendations.
     """
-    columns_to_show = ("title", "image", "readyInMinutes", "instructions")
+    columns_to_show = ["title", "image", "readyInMinutes", "instructions"]
     df = prep_data(ingredients)
     recommendations = _make_recommendations(df, columns_to_show)
 
