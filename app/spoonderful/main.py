@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from .data import models
+from .data.database import engine
 from .routes import (
     register,
     user,
@@ -8,7 +10,8 @@ from .routes import (
     recommendation,
 )
 
-
+# Create tables in the database from the ORM models if they do not exist.
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 origins = ["*"]

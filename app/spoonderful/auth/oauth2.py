@@ -13,8 +13,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 # SECRET_KEY = settings.secret_key
 # ALGORITHM = settings.algorithm
 # ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
-SECRET_KEY = os.getenv("food_secret")
-ALGORITHM = os.getenv("algo")
+# TODO Refactor into above.
+SECRET_KEY = "test"
+ALGORITHM = "HS256"
 ACCESS_TOKEN_DURATION = 30
 
 

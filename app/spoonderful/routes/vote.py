@@ -52,7 +52,7 @@ def _add_vote(vote: schemas.Vote, current_user: int) -> models.Vote:
     Internal function that creates a new entry for the votes table.
     """
     new_vote = models.Vote(
-        post_id=vote.recipe_id,
+        recipe_id=vote.recipe_id,
         user_id=current_user.id,
         direction=vote.direction,
     )
