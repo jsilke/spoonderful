@@ -1,7 +1,7 @@
-from src.spoonderful.app.data.database import Base
-from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String
+from app.spoonderful.data.database import Base
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Enum
 from sqlalchemy.sql.expression import text
-from src.spoonderful.app.data.schemas import Direction
+from app.spoonderful.data.schemas import Direction
 
 
 class User(Base):
@@ -26,8 +26,6 @@ class Vote(Base):
 
     __tablename__ = "likes"
 
-    user_id = Column(
-        Integer, ForeignKey("users.id"), ondelete="CASCADE", primary_key=True
-    )
-    recipe_id = Column(Integer, ondelete="CASCADE", primary_key=True)
-    direction = Column(Direction, nullable=False, ondelete="CASCADE")
+    user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+    recipe_id = Column(Integer, primary_key=True)
+    direction = Column(Enum(Direction), nullable=False)

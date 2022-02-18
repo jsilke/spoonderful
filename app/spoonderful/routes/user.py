@@ -1,6 +1,6 @@
 from fastapi import status, HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
-from src.spoonderful.app.data import database, models, schemas
+from app.spoonderful.data import database, models, schemas
 
 router = APIRouter(prefix="/user", tags=["Users"])
 

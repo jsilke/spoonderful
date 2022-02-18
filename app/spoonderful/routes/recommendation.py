@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
-from src.spoonderful.processing.preprocess import prep_data
-from src.spoonderful.app.data.schemas import Recommendation
+from app.spoonderful.processing.preprocess import prep_data
+from app.spoonderful.data.schemas import Recommendation
 import pandas as pd
 
 router = APIRouter(prefix="/recommendations", tags=["Recipes"])

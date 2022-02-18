@@ -1,16 +1,21 @@
 from jose import JWTError, jwt  # JSON Web Token handling
 from datetime import datetime, timedelta
-from app import schemas, database, models
+from app.spoonderful.data import schemas, database, models
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from src.spoonderful.app.config import settings
+
+# from src.spoonderful.app.config import settings
+import os
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-SECRET_KEY = settings.secret_key
-ALGORITHM = settings.algorithm
-ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
+# SECRET_KEY = settings.secret_key
+# ALGORITHM = settings.algorithm
+# ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
+SECRET_KEY = os.getenv("food_secret")
+ALGORITHM = os.getenv("algo")
+ACCESS_TOKEN_DURATION = 30
 
 
 def create_access_token(data: dict):
