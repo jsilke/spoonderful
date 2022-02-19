@@ -112,7 +112,7 @@ class SpoonacularResponse:
         return spoonacular_response
 
     @classmethod
-    def get_recipes(cls, ingredients: str) -> SpoonacularResponse:
+    def get_recipes(cls, ingredients: str, number: int) -> SpoonacularResponse:
         """
         Query recipes using Spoonacular's complex search.
         See: https://spoonacular.com/food-api/docs#Search-Recipes-Complex
@@ -126,7 +126,7 @@ class SpoonacularResponse:
             "fillIngredients": False,
             "addRecipeNutrition": True,  # Also sets addRecipeInformation to True
             "ignorePantry": True,
-            "number": 5,
+            "number": number,  # The number of recipes to return.
         }
 
         spoonacular_response = cls._make_request_and_check_response(

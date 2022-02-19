@@ -18,26 +18,32 @@ def get_query(path: str = "../data/my_food.txt") -> str:
 
 def retrieve_data(
     query: str,
-    response: SpoonacularResponse = SpoonacularResponse.get_recipes,
-    strategy: DataRetrievalStrategy = ComplexRetrievalStrategy,
+    recipe_quantity: int,
+    response: SpoonacularResponse,
+    strategy: DataRetrievalStrategy,
 ) -> list[dict, str, object]:
     """
     Uses the SpoonacularResponse.classmethod to query a Spoonacular endpoint and retrieve
     the data defined in the strategy class. Returns response JSON data.
     """
-    spoon = SpoonacularResponse.get_recipes(query)
-    retrieval_strategy = ComplexRetrievalStrategy()
+    spoon = response(query, recipe_quantity)
+    retrieval_strategy = strategy()
 
     return spoon.get_data(retrieval_strategy)
 
 
-def prep_data(query: str):
+def prep_recipe_data(
+    query: str,
+    recipe_quantity: int = 5,
+    response: SpoonacularResponse = SpoonacularResponse.get_recipes,
+    strategy: DataRetrievalStrategy = ComplexRetrievalStrategy,
+):
     """
-    Get and preprocess Spoonacular response data in preparation for recommendation.
+    Get the Spoonacular response and preprocess the recipe JSON data in preparation for recommendation.
     """
-    # TODO Refactor to generalize better.
+    # TODO increase cohesion here.
 
-    data = retrieve_data(query)
+    data = retrieve_data(query, recipe_quantity, response, strategy)
 
     df = pd.DataFrame(data)
     df = df.drop(columns=["nutrition", "analyzedInstructions"])
@@ -59,8 +65,6 @@ def prep_data(query: str):
 
     frames = [df, calorie_df, nutrient_df, instructions_df]
     aggregate_df = pd.concat(frames, axis=1)
-
     aggregate_df = aggregate_df.fillna(0)
-    aggregate_df = aggregate_df.set_index("id")
 
     return aggregate_df
