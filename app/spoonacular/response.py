@@ -3,6 +3,7 @@ import requests as rq
 import os
 from .retrieval import DataRetrievalStrategy  # . needed because modules not packaged
 from typing import Optional
+from app.spoonderful.config import settings
 
 
 class SpoonacularResponse:
@@ -10,7 +11,7 @@ class SpoonacularResponse:
     Class to make requests to Spoonacular's API and store the response data.
     """
 
-    RAPID_API_KEY = os.getenv("spoonacular")
+    RAPID_API_KEY = settings.spoonacular_key
     # RapidAPI's Spoonacular entry point.
     ENTRY_POINT = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/"
     HEADERS = {

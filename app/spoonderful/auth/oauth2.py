@@ -4,19 +4,16 @@ from app.spoonderful.data import schemas, database, models
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from app.spoonderful.config import settings
 
 # from src.spoonderful.app.config import settings
 import os
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-# SECRET_KEY = settings.secret_key
-# ALGORITHM = settings.algorithm
-# ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
-# TODO Refactor into above.
-SECRET_KEY = "test"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_DURATION = 30
+SECRET_KEY = settings.secret_key
+SIGNING_ALGORITHM = settings.signing_algorithm
+ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
 
 
 def create_access_token(data: dict):
@@ -30,7 +27,7 @@ def create_access_token(data: dict):
     token_expiry = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_DURATION)
     to_encode.update({"exp": token_expiry})
 
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=SIGNING_ALGORITHM)
 
     return encoded_jwt
 
@@ -41,7 +38,7 @@ def _verify_access_token(token: str, credentials_exception: HTTPException):
     if the user does not exist or if the token cannot be verified.
     """
     try:
-        data = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        data = jwt.decode(token, SECRET_KEY, algorithms=[SIGNING_ALGORITHM])
         user_id = data.get("user_id")
         if user_id is None:
             raise credentials_exception

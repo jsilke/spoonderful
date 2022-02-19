@@ -2,15 +2,16 @@ from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
-    database_hostname: str
+    database_host: str
     database_port: str
     database_password: str
     database_name: str
     database_username: str
     secret_key: str
-    algorithm: str
+    signing_algorithm: str
     access_token_duration_minutes: int
     spoonacular_key: str
+    rdbms: str
 
     class Config:
         env_file = ".env"
