@@ -8,6 +8,8 @@ import pandas as pd
 import numpy as np
 
 router = APIRouter(prefix="/recommendations", tags=["Recipes"])
+# These columns will be excluded from analysis and shown to the user. Note that a change here requires a change to the Recommendation schema.
+COLUMNS_TO_SHOW = ["id", "title", "image", "readyInMinutes", "instructions"]
 
 
 @router.get("/simple", status_code=status.HTTP_200_OK)
@@ -15,9 +17,8 @@ def get_similar_recipies(ingredients: str):
     """
     Query Spoonacular's API for data using the provided ingredient list and return the top 5 (or fewer) recipe recommendations.
     """
-    columns_to_show = ["id", "title", "image", "readyInMinutes", "instructions"]
     df = prep_recipe_data(ingredients)
-    recommendations = _make_recommendations(df, columns_to_show)
+    recommendations = _make_recommendations(df)
 
     return recommendations
 
@@ -27,15 +28,18 @@ def get_varied_recipes(ingredients: str):
     """
     Query Spoonacular's API for data using the provided ingredient list and apply unsupervised learning to return diverse recipe recommendations.
     """
-    columns_to_show = ["id", "title", "image", "readyInMinutes", "instructions"]
     df = prep_recipe_data(ingredients, 100)
 
     if df.shape[0] > 5:
-        clustering, X = apply_clustering(df.drop(columns=columns_to_show))
-        indices = _get_recommendation_indices_from_clusters(clustering, X)
+        clustering, principal_component_coordinates = apply_clustering(
+            df.drop(columns=COLUMNS_TO_SHOW)
+        )
+        indices = _get_recommendation_indices_from_clusters(
+            clustering, principal_component_coordinates
+        )
         df = df.iloc[indices]
 
-    recommendations = _make_recommendations(df, columns_to_show)
+    recommendations = _make_recommendations(df)
 
     return recommendations
 
@@ -53,7 +57,7 @@ def _get_recommendation_indices_from_clusters(
     return closest
 
 
-def _make_recommendations(df: pd.DataFrame, columns: tuple) -> dict[Recommendation]:
+def _make_recommendations(df: pd.DataFrame) -> dict[Recommendation]:
     """
     Internal function used by `get_recipes` that takes in a DataFrame filtered down to 5 recipes and returns the recommendations in a dictionary.
     """
@@ -64,6 +68,6 @@ def _make_recommendations(df: pd.DataFrame, columns: tuple) -> dict[Recommendati
             instructions=row.instructions,
             time_minutes=row.readyInMinutes,
         )
-        for row in df[columns].itertuples()
+        for row in df[COLUMNS_TO_SHOW].itertuples()
     }
     return recommendations
