@@ -34,7 +34,7 @@ class TokenData(BaseModel):
 
 class Direction(Enum):
     """
-    Tracks dislikes and likes.
+    Enforces typing for dislikes and likes.
     """
 
     DISLIKE = 0

@@ -11,13 +11,13 @@ def get_user(
     db: Session = Depends(database.get_db),
 ):
     """
-    Checks the user table for a user with the specified id and returns the user information.
+    Checks the user table for a user with the specified id and returns the user information defined in the UserOut schema.
     """
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User with id: {id} does not exist",
+            detail=f"User {id} does not exist.",
         )
 
     return user
