@@ -56,7 +56,7 @@ def remove_vote_on_recipe(
     )
 
     found_vote = vote_query.first()
-    if found_vote:
+    if found_vote and found_vote.direction == vote.direction:
         # Remove vote when same activity is repeated (e.g. clicking like on a liked recipe should remove the like).
         vote_query.delete(synchronize_session=False)
         db.commit()
@@ -65,7 +65,7 @@ def remove_vote_on_recipe(
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
-        detail=f"User has not voted on {vote.recipe_id}",
+        detail=f"Either user has not voted on recipe {vote.recipe_id} or the vote is in the opposite direction.",
     )
 
 
@@ -95,13 +95,13 @@ def change_vote_on_recipe(
 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User has alredy voted on recipe {vote.recipe_id}",
+            detail=f"User has already voted on recipe {vote.recipe_id}",
         )
 
     else:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User has not voted on {vote.recipe_id}",
+            detail=f"User has not voted on recipe {vote.recipe_id}",
         )
 
 
