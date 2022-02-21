@@ -138,6 +138,24 @@ class SpoonacularResponse:
 
         return spoonacular_response
 
+    @classmethod
+    def get_recipe_from_id(cls, recipe_id: int) -> SpoonacularResponse:
+        """
+        Gets information about a recipe id. Can be used to validate recipes that users vote on.
+        See: https://spoonacular.com/food-api/docs#Get-Recipe-Information
+        """
+        ENDPOINT = f"recipes/{recipe_id}/information"
+        URL = f"{cls.ENTRY_POINT}{ENDPOINT}"
+        parameters = {"id": recipe_id, "includeNutrition": False}
+
+        spoonacular_response = cls._make_request_and_check_response(
+            url=URL,
+            parameters=parameters,
+            headers=cls.HEADERS,
+        )
+
+        return spoonacular_response
+
     def get_data(self, retrieval_strategy: DataRetrievalStrategy) -> dict[str, object]:
         """
         Returns response data based on a concrete retrieval_strategy object that inherits from the DataRetrievalStrategy abstract base class.
