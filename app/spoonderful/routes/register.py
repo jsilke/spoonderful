@@ -1,7 +1,9 @@
-from fastapi import status, Depends, APIRouter
+from fastapi import status, Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.spoonderful.auth import utils
 from app.spoonderful.data import database, models, schemas
+
 
 router = APIRouter(prefix="/register", tags=["Sign Up"])
 
@@ -16,9 +18,15 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     hashed_password = utils.hash_password(user.password)
     user.password = hashed_password
 
-    new_user = models.User(**user.dict())
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        new_user = models.User(**user.dict())
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"A user with that email is already registered!",
+        )
 
-    return new_user  # TODO change.
+    return new_user

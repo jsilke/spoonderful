@@ -18,7 +18,7 @@ def apply_clustering(prepared_data: pd.DataFrame) -> tuple[Pipeline, pd.DataFram
     pipe = Pipeline(
         [
             (
-                "pca_prep",
+                "encoding",
                 ColumnTransformer(
                     [
                         (
@@ -26,14 +26,11 @@ def apply_clustering(prepared_data: pd.DataFrame) -> tuple[Pipeline, pd.DataFram
                             OrdinalEncoder(),
                             column_indices_dict["binary_features"],
                         ),
-                        (
-                            "continuous",
-                            StandardScaler(),
-                            column_indices_dict["continuous_features"],
-                        ),
                     ],
+                    remainder="passthrough",
                 ),
             ),
+            ("scaling", StandardScaler()),
             ("reduce_dimensions", PCA(n_components=2)),
         ],
     )

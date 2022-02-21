@@ -46,13 +46,17 @@ def prep_recipe_data(
     data = retrieve_data(query, recipe_quantity, response, strategy)
 
     df = pd.DataFrame(data)
-    df = df.drop(columns=["nutrition", "analyzedInstructions"])
+    try:
+        df = df.drop(columns=["nutrition", "analyzedInstructions"])
+    except KeyError:
+        print("No results retrieved for provided ingredients.")
+        return df
 
     nutrition_data = []
     instruction_data = []
     for recipe in data:
-        nutrition_data.append(recipe["nutrition"])
-        instruction_data.append(recipe["analyzedInstructions"])
+        nutrition_data.append(recipe.get("nutrition"))
+        instruction_data.append(recipe.get("analyzedInstructions"))
 
     calories = tab.CaloricBreakdownTabulator()
     calorie_df = calories.tabulate_data(nutrition_data)

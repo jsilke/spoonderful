@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, HTTPException
 from app.spoonderful.processing.preprocess import prep_recipe_data
 from app.spoonderful.processing.pipeline import apply_clustering
 from app.spoonderful.data.schemas import Recommendation
@@ -18,7 +18,13 @@ def get_similar_recipies(ingredients: str):
     Query Spoonacular's API for data using the provided ingredient list and return the top 5 (or fewer) recipe recommendations.
     """
     df = prep_recipe_data(ingredients)
-    recommendations = _make_recommendations(df)
+    try:
+        recommendations = _make_recommendations(df)
+    except KeyError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Oh no! It looks like Spoonacular doesn't have recipes with only: {ingredients}! Try double checking your spelling and/or adding more ingredients!",
+        )
 
     return recommendations
 
@@ -39,7 +45,13 @@ def get_varied_recipes(ingredients: str):
         )
         df = df.iloc[indices]
 
-    recommendations = _make_recommendations(df)
+    try:
+        recommendations = _make_recommendations(df)
+    except KeyError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Oh no! It looks like Spoonacular doesn't have recipes with only: {ingredients}! Try double checking your spelling and/or adding more ingredients!",
+        )
 
     return recommendations
 

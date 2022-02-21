@@ -50,7 +50,7 @@ class NutrientDailyNeedsTabulator(DataTabulator):
         daily_needs = [
             {
                 nutrient[self.nested_pair[0]]: nutrient[self.nested_pair[1]]
-                for nutrient in recipe["nutrients"]
+                for nutrient in recipe.get("nutrients")
             }
             for recipe in json_data
         ]
