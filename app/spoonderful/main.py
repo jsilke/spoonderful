@@ -22,4 +22,6 @@ app.include_router(recommendation.router)
 
 @app.get("/")
 def root():
-    return {"message": "Hello World!"}
+    return {
+        "message": "Visit https://savefood.xyz/docs to view documentation and try out the API!"
+    }
