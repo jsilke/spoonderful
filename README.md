@@ -2,26 +2,21 @@
 ![Issues](https://img.shields.io/github/issues/jsilke/spoonderful)
 ![Last Commit](https://img.shields.io/github/last-commit/jsilke/spoonderful)
 
-# Recipe recommendation for food waste reduction
+# **Recipe recommendation for food waste reduction**
 
-## Top Contributors
----
-## Contributors
+## **Top Contributors**
 
   * Jordan Silke [![GitHub](https://img.shields.io/github/followers/jsilke?style=social)](https://github.com/jsilke)
 
-### Use case
----
+### **Use case**
 
 The goal of this project is to build a recipe recommender with the principal intention of mitigating food waste by prioritizing ingredients that the user already has in their possession. This is the core nuance that differentiates this project from other meal planners. While other factors including cost, variety, and nutrition will be considered in recommendations, priority will be given to recipes composed of household ingredients.
 
-### Data
----
+### **Data**
 
 Most data is dynamically sourced from [Spoonacular](https://spoonacular.com/)'s API in accordance with their [terms of use](https://spoonacular.com/food-api/terms). Note that the Spoonacular team also provides a list including the 1000 most popular ingredients and their associated IDs [here](https://spoonacular.com/food-api/docs#List-of-Ingredients). Direct use of this project's source code will require an API key, which can be obtained [directly from Spoonacular](https://spoonacular.com/food-api/console#Dashboard) or [through RapidAPI](https://rapidapi.com/spoonacular/api/recipe-food-nutrition/), though this project is structured to use the version of the API hosted by RapidAPI.
 
-### Project Structure
----
+### **Project Structure**
 
 ```bash
 .
@@ -88,9 +83,9 @@ http://127.0.0.1:8000/docs
 
 ***TL;DR*** import the requirements, setup your database and .env file to match expected [settings](./config.py), then run `uvicorn app.spoonderful.main:app` in your environment and play around with the API @ http://127.0.0.1:8000/docs
 
-### Data Pipeline
----
+### **Data Pipeline**
+
 The API currently supports two recommendation approaches. The trivial (`simple`) approach simply returns the top 5 (or fewer) results from Spoonacular's recipe search that you aren't missing any ingredients to make. 
 
-The `varied` approach filters the top 100 results to a set that you aren't missing any ingredients to make and then if the remaining number of recipes is 5 or fewer, it behaves like the simple approach, otherwise the dimensionality of the feature space is reduced to two principal components and dynamic k-means clustering
-is applied to force 5 clusters. The recipes that are closest to the centroid for each cluster are then returned as the top 5 recommendations.
+The `varied` approach first filters the top 100 results to a set with no missing ingredients. If the remaining number of recipes in this set is five or fewer, the results are returned; otherwise, the dimensionality of the feature space is reduced to two principal components and dynamic k-means clustering
+is applied to force five recipe clusters. The recipes that are closest to the centroid in each cluster are then returned as the top five recommendations.
