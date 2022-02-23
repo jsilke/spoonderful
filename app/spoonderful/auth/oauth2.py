@@ -16,8 +16,7 @@ ACCESS_TOKEN_DURATION = settings.access_token_duration_minutes
 def create_access_token(data: dict):
     """
     Create a limited duration JSON Web Token using a specified algorithm. Both the algorithm and duration
-    (in minutes) can be specified in config.py. The SECRET_KEY is used in conjunction with the other data
-    to sign the token to ensure data integrity.
+    (in minutes) are specified in settings.
     """
     to_encode = data.copy()
 

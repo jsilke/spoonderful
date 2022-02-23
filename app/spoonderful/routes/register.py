@@ -5,13 +5,21 @@ from app.spoonderful.auth import utils
 from app.spoonderful.data import database, models, schemas
 
 
-router = APIRouter(prefix="/register", tags=["Sign Up"])
+router = APIRouter(tags=["Sign Up"])
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+@router.post(
+    "/register", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut
+)
 def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     """
-    Register to gain access to voting on valid recipes.
+    Register to gain access to voting on valid recipes. Note email validation here requires x@y.z format where traditionally:
+    x = account
+    y = domain
+    z = extension
+
+    but here these conventions are not enforced and no confirmation emails are currently sent. This is really just a placeholder
+    for unique usernames that gave me a chance to play with an email string validation strategy.
     """
 
     hashed_password = utils.hash_password(user.password)

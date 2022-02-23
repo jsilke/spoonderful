@@ -1,5 +1,4 @@
-from typing import Any
-from fastapi import status, Depends, APIRouter, HTTPException, Query
+from fastapi import status, Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from app.spoonderful.data import schemas, database, models
 from app.spoonderful.auth import oauth2
@@ -18,6 +17,7 @@ def new_vote_on_recipe(
     """
     Voting logic that covers adding a valid vote.
     `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
+    Confirms recipe validity using `_check_recipe_id`.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
@@ -26,8 +26,8 @@ def new_vote_on_recipe(
     found_vote = vote_query.first()
     if not found_vote:
         if _check_recipe_id(vote.recipe_id):
-            # Add the vote if it does not exist.
-            new_vote = _add_vote(vote, current_user.id)
+            # Add the vote if it does not exist for a valid recipe.
+            new_vote = _make_vote(vote, current_user.id)
             db.add(new_vote)
             db.commit()
 
@@ -53,22 +53,30 @@ def remove_vote_on_recipe(
     """
     Voting logic that covers removing votes.
     `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
+    For the vote to be removed successfully, the `direction` of the `vote` argument should match what is stored
+    in the database.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
     )
 
     found_vote = vote_query.first()
-    if found_vote and found_vote.direction == vote.direction:
-        # Remove vote when same activity is repeated (e.g. clicking like on a liked recipe should remove the like).
-        vote_query.delete(synchronize_session=False)
-        db.commit()
+    if found_vote:
+        if found_vote.direction == vote.direction:
+            # Remove vote when same activity is repeated (e.g. clicking like on a liked recipe should remove the like).
+            vote_query.delete(synchronize_session=False)
+            db.commit()
 
-        return {"message": "Successfully removed vote."}
+            return {"message": "Successfully removed vote."}
+
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"User vote on recipe {vote.recipe_id} is in the opposite direction!",
+        )
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
-        detail=f"Either user has not voted on recipe {vote.recipe_id} or the vote is in the opposite direction.",
+        detail=f"User has not voted on recipe {vote.recipe_id}.",
     )
 
 
@@ -81,6 +89,8 @@ def change_vote_on_recipe(
     """
     Voting logic that covers changing votes.
     `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
+    For the vote to be changed successfully, the `direction` of the `vote` argument should oppose what is stored
+    in the database.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
@@ -89,8 +99,8 @@ def change_vote_on_recipe(
     found_vote = vote_query.first()
     if found_vote:
         if vote.direction != found_vote.direction:
-            # Switch the vote when the opposite behaviour is selected.
-            new_vote = _add_vote(vote, current_user.id)
+            # Switch the vote when the opposite behaviour is selected (e.g. clicking dislike on a liked recipe).
+            new_vote = _make_vote(vote, current_user.id)
             vote_query.delete(synchronize_session=False)
             db.add(new_vote)
             db.commit()
@@ -99,17 +109,17 @@ def change_vote_on_recipe(
 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User has already voted on recipe {vote.recipe_id}",
+            detail=f"Vote direction matches user vote direction for recipe {vote.recipe_id}",
         )
 
     else:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail=f"User has not voted on recipe {vote.recipe_id}",
+            detail=f"User has not yet voted on recipe {vote.recipe_id}",
         )
 
 
-def _add_vote(vote: schemas.Vote, current_user_id: int) -> models.Vote:
+def _make_vote(vote: schemas.Vote, current_user_id: int) -> models.Vote:
     """
     Internal function that creates a new entry for the votes table.
     """

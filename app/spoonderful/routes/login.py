@@ -4,17 +4,17 @@ from sqlalchemy.orm import Session
 from app.spoonderful.data import database, schemas, models
 from app.spoonderful.auth import utils, oauth2
 
-router = APIRouter(prefix="/login", tags=["Authentication"])
+router = APIRouter(tags=["Authentication"])
 
 
-@router.post("/", response_model=schemas.Token)
+@router.post("/login", response_model=schemas.Token)
 def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(database.get_db),
 ):
     """
     The green 'Authorize' button at the top right of the docs should be used as a more intuitive login option.
-    Use the email address you registered with as a username.
+    Use the email address you registered with as a `username`.
     """
     user = (
         db.query(models.User)

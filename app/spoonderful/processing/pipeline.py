@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
@@ -6,11 +7,11 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 
 
-def apply_clustering(prepared_data: pd.DataFrame) -> tuple[Pipeline, pd.DataFrame]:
+def apply_clustering(prepared_data: pd.DataFrame) -> tuple[KMeans, np.ndarray]:
     """
     Apply cluster analysis to the appropriate columns of the prepared DataFrame using a 'force 5' KMeans
     strategy. The `recommended_columns` refers to columns appearing in the recommendations sent to users.
-    Returns the fitted pipe and the transformed data.
+    Returns the fitted clustering (`cluster`) and the transformed data (`X`).
     """
     all_columns = prepared_data.columns.tolist()
     column_indices_dict = _map_columns_to_indices(all_columns)
@@ -44,7 +45,11 @@ def apply_clustering(prepared_data: pd.DataFrame) -> tuple[Pipeline, pd.DataFram
 
 
 def _map_columns_to_indices(df_columns: list) -> dict[list]:
-
+    """
+    Maps the column names to the corresponding numpy array column indices. Note that the current
+    iteration of the algorithm does not make use of `continuous_features` but it was used in prior
+    versions and may be useful for further transformations.
+    """
     column_map = {name: index for index, name in enumerate(df_columns)}
 
     binary_features = [

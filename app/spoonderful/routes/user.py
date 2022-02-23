@@ -25,7 +25,8 @@ def get_user_votes(
     current_user: int = Depends(oauth2.get_current_user),
 ):
     """
-    Returns the votes of the signed in user.
+    Returns the votes (likes and dislikes encoded as 1 and 0, respectively) of the signed
+    in user.
     """
     user_info = (
         db.query(models.Vote.recipe_id, models.Vote.direction)

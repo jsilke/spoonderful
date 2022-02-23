@@ -21,7 +21,7 @@ class User(Base):
 
 class Vote(Base):
     """
-    ORM model for a table to store recommendations voted on by users as id pairs.
+    ORM model for a table to store recommendations voted on by users.
     """
 
     __tablename__ = "likes"
