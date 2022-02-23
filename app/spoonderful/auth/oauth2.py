@@ -6,9 +6,6 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.spoonderful.config import settings
 
-# from src.spoonderful.app.config import settings
-import os
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 SECRET_KEY = settings.secret_key
@@ -42,7 +39,7 @@ def _verify_access_token(token: str, credentials_exception: HTTPException):
         user_id = data.get("user_id")
         if user_id is None:
             raise credentials_exception
-        token_data = schemas.TokenData(id=user_id)  # TODO add TokenData to schemas.
+        token_data = schemas.TokenData(id=user_id)
     except JWTError:
         raise credentials_exception
 

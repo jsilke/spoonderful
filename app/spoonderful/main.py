@@ -8,10 +8,26 @@ from .routes import (
     vote,
     recommendation,
 )
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create tables in the database from the ORM models if they do not exist.
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+
+origins = [
+    "http://localhost.savefood.xyz",
+    "https://localhost.savefood.xyz",
+    "http://localhost",
+    "http://localhost:8000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(register.router)
 app.include_router(user.router)
