@@ -85,7 +85,6 @@ http://127.0.0.1:8000/docs
 
 ### **Data Pipeline**
 
-The API currently supports two recommendation approaches. The trivial (`simple`) approach simply returns the top 5 (or fewer) results from Spoonacular's recipe search that you aren't missing any ingredients to make. 
+The API currently supports two recommendation approaches. The trivial (`simple`) approach simply returns the top 5 (or fewer) results from Spoonacular's recipe search with the fewest missing ingredients. 
 
-The `varied` approach first filters the top 100 results to a set with no missing ingredients. If the remaining number of recipes in this set is five or fewer, the results are returned; otherwise, the dimensionality of the feature space is reduced to two principal components and dynamic k-means clustering
-is applied to force five recipe clusters. The recipes that are closest to the centroid in each cluster are then returned as the top five recommendations.
+The `varied` approach first filters the top 100 results to a set with fewer missing ingredients. If the remaining number of recipes in this set is five or fewer, the results are returned as is; otherwise, the dimensionality of the feature space is reduced to two principal components and dynamic k-means clustering is applied to force five recipe clusters. The recipes that are closest to the centroid in each cluster are then returned as the top five recommendations.
