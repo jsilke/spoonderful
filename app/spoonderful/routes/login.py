@@ -12,7 +12,10 @@ def login(
     user_credentials: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(database.get_db),
 ):
-
+    """
+    The green 'Authorize' button at the top right of the docs should be used as a more intuitive login option.
+    Use the email address you registered with as a username.
+    """
     user = (
         db.query(models.User)
         .filter(models.User.email == user_credentials.username)

@@ -1,4 +1,5 @@
-from fastapi import status, Depends, APIRouter, HTTPException
+from typing import Any
+from fastapi import status, Depends, APIRouter, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.spoonderful.data import schemas, database, models
 from app.spoonderful.auth import oauth2
@@ -16,6 +17,7 @@ def new_vote_on_recipe(
 ):
     """
     Voting logic that covers adding a valid vote.
+    `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
@@ -25,7 +27,7 @@ def new_vote_on_recipe(
     if not found_vote:
         if _check_recipe_id(vote.recipe_id):
             # Add the vote if it does not exist.
-            new_vote = _add_vote(vote, current_user)
+            new_vote = _add_vote(vote, current_user.id)
             db.add(new_vote)
             db.commit()
 
@@ -50,6 +52,7 @@ def remove_vote_on_recipe(
 ):
     """
     Voting logic that covers removing votes.
+    `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
@@ -77,6 +80,7 @@ def change_vote_on_recipe(
 ):
     """
     Voting logic that covers changing votes.
+    `recipe_id` should be a valid Spoonacular recipe id and `direction` should be 0 for dislike or 1 for like.
     """
     vote_query = db.query(models.Vote).filter(
         models.Vote.recipe_id == vote.recipe_id, models.Vote.user_id == current_user.id
@@ -86,7 +90,7 @@ def change_vote_on_recipe(
     if found_vote:
         if vote.direction != found_vote.direction:
             # Switch the vote when the opposite behaviour is selected.
-            new_vote = _add_vote(vote, current_user)
+            new_vote = _add_vote(vote, current_user.id)
             vote_query.delete(synchronize_session=False)
             db.add(new_vote)
             db.commit()
@@ -105,13 +109,13 @@ def change_vote_on_recipe(
         )
 
 
-def _add_vote(vote: schemas.Vote, current_user: int) -> models.Vote:
+def _add_vote(vote: schemas.Vote, current_user_id: int) -> models.Vote:
     """
     Internal function that creates a new entry for the votes table.
     """
     new_vote = models.Vote(
         recipe_id=vote.recipe_id,
-        user_id=current_user.id,
+        user_id=current_user_id,
         direction=vote.direction,
     )
 

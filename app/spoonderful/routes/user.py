@@ -1,23 +1,36 @@
-from fastapi import status, HTTPException, Depends, APIRouter
+from fastapi import Depends, APIRouter
 from sqlalchemy.orm import Session
 from app.spoonderful.data import database, models, schemas
+from app.spoonderful.auth import oauth2
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
 
-@router.get("/{id}", response_model=schemas.UserOut)
-def get_user(
-    id: int,
+@router.get("/", response_model=schemas.UserOut)
+def get_user_info(
     db: Session = Depends(database.get_db),
+    current_user: int = Depends(oauth2.get_current_user),
 ):
     """
-    Checks the user table for a user with the specified id and returns the user information defined in the UserOut schema.
+    Returns the account information of the signed in user.
     """
-    user = db.query(models.User).filter(models.User.id == id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"User {id} does not exist.",
-        )
+    user_info = db.query(models.User).filter(models.User.id == current_user.id).first()
 
-    return user
+    return user_info
+
+
+@router.get("/votes")
+def get_user_votes(
+    db: Session = Depends(database.get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+):
+    """
+    Returns the votes of the signed in user.
+    """
+    user_info = (
+        db.query(models.Vote.recipe_id, models.Vote.direction)
+        .filter(models.Vote.user_id == current_user.id)
+        .all()
+    )
+
+    return user_info

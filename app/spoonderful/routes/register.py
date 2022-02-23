@@ -11,8 +11,7 @@ router = APIRouter(prefix="/register", tags=["Sign Up"])
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
 def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     """
-    Create a new user. Note that since emails are our usernames and we have forced them to be unique,
-    duplicates will result in an error.
+    Register to gain access to voting on valid recipes.
     """
 
     hashed_password = utils.hash_password(user.password)

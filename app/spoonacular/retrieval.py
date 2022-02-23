@@ -91,7 +91,9 @@ class ComplexRetrievalStrategy(DataRetrievalStrategy):
         recipe_data = [
             {field: recipe.get(field) for field in self.fields}
             for recipe in json_data.get("results")
-            if (recipe.get("missedIngredientCount") == 0)
+            if (
+                recipe.get("missedIngredientCount") <= 2
+            )  # initially 0 tolerance (i.e. `== 0` rather than `<= 2`), but this performed poorly when ingredient lists were short.
         ]
 
         return recipe_data
